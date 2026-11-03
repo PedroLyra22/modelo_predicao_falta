@@ -2,9 +2,9 @@ import os
 import datetime
 from flask import Flask, render_template, request, jsonify
 from werkzeug.utils import secure_filename
-from app.model_service import ModelService, BASE_DIR, MODELS_DIR
-from app.trainer import train_and_evaluate_models
-from app.open_data_service import get_complete_open_data
+from app.app import ModelService, BASE_DIR, MODELS_DIR
+from app.app import train_and_evaluate_models
+from app.app import get_complete_open_data
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "tcc-predicao-faltas-secret-key-2026"
@@ -40,7 +40,7 @@ def get_weights():
         pipeline, meta = model_service.load_pipeline(version)
         weights = meta.get("weights")
         if not weights or not weights.get("grouped"):
-            from app.trainer import extract_feature_importances
+            from app.app import extract_feature_importances
             weights = extract_feature_importances(pipeline)
             meta["weights"] = weights
             # Atualiza no registro

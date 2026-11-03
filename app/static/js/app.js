@@ -52,6 +52,8 @@ document.addEventListener("DOMContentLoaded", () => {
     inputCsvFile: document.getElementById("inputCsvFile"),
     filePickerText: document.getElementById("filePickerText"),
     selectDefaultDataset: document.getElementById("selectDefaultDataset"),
+    selectTrainSplit: document.getElementById("selectTrainSplit"),
+    splitPreviewBar: document.getElementById("splitPreviewBar"),
     btnStartTraining: document.getElementById("btnStartTraining"),
     trainingLoading: document.getElementById("trainingLoading"),
     trainingResultBox: document.getElementById("trainingResultBox"),
@@ -370,17 +372,28 @@ document.addEventListener("DOMContentLoaded", () => {
         </option>
       `).join("");
 
-      elements.tableModelsBody.innerHTML = state.models.map(m => `
+      elements.tableModelsBody.innerHTML = state.models.map(m => {
+        let splitText = "80% / 20%";
+        if (m.train_ratio_pct && m.test_ratio_pct) {
+          splitText = `${m.train_ratio_pct}% / ${m.test_ratio_pct}%`;
+        } else if (m.train_samples && m.test_samples) {
+          const total = m.train_samples + m.test_samples;
+          const tr = Math.round((m.train_samples / total) * 100);
+          const te = 100 - tr;
+          splitText = `${tr}% / ${te}%`;
+        }
+        return `
         <tr>
           <td><strong>${m.version}</strong></td>
           <td>${m.best_algorithm}</td>
+          <td><span class="split-pill-sm">${splitText}</span></td>
           <td>${m.best_metrics?.MAE || '--'}%</td>
           <td>${m.is_active ? '<span class="tag-active-sm">● Ativo</span>' : '<span style="color:#64748b">Inativo</span>'}</td>
           <td>
             ${m.is_active ? '-' : `<button class="btn-activate-sm" data-v="${m.version}">Ativar</button>`}
           </td>
         </tr>
-      `).join("");
+      `;}).join("");
 
       document.querySelectorAll(".btn-activate-sm").forEach(b => {
         b.addEventListener("click", async () => {
@@ -421,6 +434,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  if (elements.selectTrainSplit && elements.splitPreviewBar) {
+    elements.selectTrainSplit.addEventListener("change", (e) => {
+      const testRatio = Math.round(parseFloat(e.target.value) * 100);
+      const trainRatio = 100 - testRatio;
+      elements.splitPreviewBar.innerHTML = `
+        <div class="split-bar-train" style="width: ${trainRatio}%;">${trainRatio}% Treino</div>
+        <div class="split-bar-test" style="width: ${testRatio}%;">${testRatio}% Teste</div>
+      `;
+    });
+  }
+
   // Treinamento
   elements.formTraining.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -430,6 +454,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const dSet = elements.selectDefaultDataset.value;
     if (dSet) fd.append("default_dataset", dSet);
+
+    const testSizeVal = elements.selectTrainSplit ? elements.selectTrainSplit.value : "0.2";
+    fd.append("test_size", testSizeVal);
 
     if (elements.inputCsvFile.files.length > 0) {
       fd.append("file", elements.inputCsvFile.files[0]);
@@ -454,7 +481,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!res.success) throw new Error(res.error);
 
       elements.trainingResultBox.classList.remove("hidden");
-      elements.trainingSuccessMsg.textContent = `✓ Modelo '${res.summary.version}' treinado! Algoritmo: ${res.summary.best_algorithm} (MAE: ${res.summary.best_metrics.MAE}%)`;
+      const tr = res.summary.train_ratio_pct || Math.round((1 - (res.summary.test_size || 0.2)) * 100);
+      const te = res.summary.test_ratio_pct || Math.round((res.summary.test_size || 0.2) * 100);
+      elements.trainingSuccessMsg.textContent = `✓ Modelo '${res.summary.version}' treinado com sucesso! Divisão: ${tr}% treino (${res.summary.train_samples} amostras) / ${te}% teste (${res.summary.test_samples} amostras). Algoritmo vencedor: ${res.summary.best_algorithm} (MAE: ${res.summary.best_metrics.MAE}%).`;
 
       showToast("Modelo treinado com sucesso!");
       loadModels();

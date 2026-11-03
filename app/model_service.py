@@ -4,7 +4,7 @@ import shutil
 import pandas as pd
 import joblib
 from typing import Dict, Any, List, Optional
-from app.app import FEATURES, extract_feature_importances
+from app.trainer import FEATURES, extract_feature_importances
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODELS_DIR = os.path.join(BASE_DIR, "models")

@@ -287,6 +287,22 @@
                 </select>
               </div>
 
+              <!-- Opção de escolha: Proporção Treino / Teste -->
+              <div class="input-field">
+                <label for="selectTrainSplit">Divisão da Base (Treino / Teste)</label>
+                <select id="selectTrainSplit" name="test_size" class="control">
+                  <option value="0.2" selected>80% Treino / 20% Teste (Padrão)</option>
+                  <option value="0.3">70% Treino / 30% Teste</option>
+                  <option value="0.25">75% Treino / 25% Teste</option>
+                  <option value="0.15">85% Treino / 15% Teste</option>
+                  <option value="0.1">90% Treino / 10% Teste</option>
+                </select>
+                <div class="split-preview-bar" id="splitPreviewBar">
+                  <div class="split-bar-train" style="width: 80%;">80% Treino</div>
+                  <div class="split-bar-test" style="width: 20%;">20% Teste</div>
+                </div>
+              </div>
+
               <button type="submit" class="btn-predict" id="btnStartTraining">
                 Iniciar Treinamento
               </button>
@@ -313,13 +329,14 @@
                   <tr>
                     <th>Versão</th>
                     <th>Algoritmo</th>
+                    <th>Divisão</th>
                     <th>MAE</th>
                     <th>Status</th>
                     <th>Ação</th>
                   </tr>
                 </thead>
                 <tbody id="tableModelsBody">
-                  <tr><td colspan="5" class="empty-cell">Carregando...</td></tr>
+                  <tr><td colspan="6" class="empty-cell">Carregando...</td></tr>
                 </tbody>
               </table>
             </div>

@@ -2,9 +2,9 @@ import os
 import datetime
 from flask import Flask, render_template, request, jsonify
 from werkzeug.utils import secure_filename
-from app.app import ModelService, BASE_DIR, MODELS_DIR
-from app.app import train_and_evaluate_models
-from app.app import get_complete_open_data
+from app.model_service import ModelService, BASE_DIR, MODELS_DIR
+from app.trainer import train_and_evaluate_models, extract_feature_importances
+from app.open_data_service import get_complete_open_data
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "tcc-predicao-faltas-secret-key-2026"
@@ -40,7 +40,6 @@ def get_weights():
         pipeline, meta = model_service.load_pipeline(version)
         weights = meta.get("weights")
         if not weights or not weights.get("grouped"):
-            from app.app import extract_feature_importances
             weights = extract_feature_importances(pipeline)
             meta["weights"] = weights
             # Atualiza no registro
@@ -104,6 +103,13 @@ def train():
         version_name = request.form.get("version_name", "").strip()
         use_default = request.form.get("default_dataset", "").strip()
         set_active = request.form.get("set_active", "true").lower() == "true"
+        test_size_raw = request.form.get("test_size", "0.2").strip()
+        try:
+            test_size = float(test_size_raw)
+            if test_size <= 0.0 or test_size >= 1.0:
+                test_size = 0.2
+        except (ValueError, TypeError):
+            test_size = 0.2
 
         if not version_name:
             timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -129,7 +135,8 @@ def train():
         summary = train_and_evaluate_models(
             csv_path=csv_path,
             output_dir=MODELS_DIR,
-            version_tag=version_name
+            version_tag=version_name,
+            test_size=test_size
         )
 
         # Registra a nova versão

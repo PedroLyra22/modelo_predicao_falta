@@ -100,11 +100,20 @@ def extract_feature_importances(pipeline: Pipeline) -> Dict[str, Any]:
 def train_and_evaluate_models(
     csv_path: str,
     output_dir: str,
-    version_tag: str
+    version_tag: str,
+    test_size: float = 0.2
 ) -> Dict[str, Any]:
     """
     Treina múltiplos modelos de regressão, compara desempenhos e salva a versão escolhida.
+    Permite customizar a proporção de divisão treino/teste (padrão: 80% treino / 20% teste).
     """
+    try:
+        test_size = float(test_size)
+        if test_size <= 0.0 or test_size >= 1.0:
+            test_size = 0.2
+    except (ValueError, TypeError):
+        test_size = 0.2
+
     df = pd.read_csv(csv_path)
 
     # Validação de colunas
@@ -132,7 +141,7 @@ def train_and_evaluate_models(
     X = df[FEATURES].copy()
     y = df[target_to_use].astype(float)
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
 
     candidate_models = {
         "RandomForest": RandomForestRegressor(n_estimators=300, random_state=42, n_jobs=-1),
@@ -178,6 +187,9 @@ def train_and_evaluate_models(
     # Pesos calculados
     weights_info = extract_feature_importances(best_pipeline)
 
+    train_pct = int(round((1.0 - test_size) * 100))
+    test_pct = int(round(test_size * 100))
+
     summary = {
         "version": version_tag,
         "filename": filename,
@@ -186,6 +198,10 @@ def train_and_evaluate_models(
         "best_metrics": results[best_name],
         "all_algorithms_comparison": results,
         "total_samples": total_samples,
+        "test_size": test_size,
+        "train_ratio_pct": train_pct,
+        "test_ratio_pct": test_pct,
+        "split_label": f"{train_pct}% Treino / {test_pct}% Teste",
         "train_samples": len(X_train),
         "test_samples": len(X_test),
         "target_mean": round(float(y.mean()), 2),

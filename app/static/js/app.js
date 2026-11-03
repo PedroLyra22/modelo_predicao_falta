@@ -60,6 +60,12 @@ document.addEventListener("DOMContentLoaded", () => {
     trainingSuccessMsg: document.getElementById("trainingSuccessMsg"),
     tableModelsBody: document.getElementById("tableModelsBody"),
 
+    // Seletores de Modelo Corrente & Ações
+    topbarSelectModel: document.getElementById("topbarSelectModel"),
+    btnMakeCurrentPredict: document.getElementById("btnMakeCurrentPredict"),
+    dashSelectModel: document.getElementById("dashSelectModel"),
+    btnDashSetCurrent: document.getElementById("btnDashSetCurrent"),
+
     // Toasts
     toastContainer: document.getElementById("toastContainer")
   };
@@ -283,17 +289,22 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Dashboard de Pesos
-  async function loadDashboard() {
+  async function loadDashboard(version) {
     try {
-      const resp = await fetch("/api/weights");
+      const query = version ? `?version=${encodeURIComponent(version)}` : "";
+      const resp = await fetch(`/api/weights${query}`);
       const res = await resp.json();
       if (!res.success) return;
 
       elements.dashActiveAlgo.textContent = res.algorithm || "RandomForest";
-      elements.dashActiveMae.textContent = res.metrics?.MAE ? `${res.metrics.MAE}%` : "--";
+      elements.dashActiveMae.textContent = res.metrics?.MAE !== undefined ? `${res.metrics.MAE}%` : "--";
       elements.dashActiveR2.textContent = res.metrics?.R2 !== undefined ? res.metrics.R2 : "--";
 
-      const grouped = res.weights.grouped || [];
+      if (elements.dashSelectModel && res.version) {
+        elements.dashSelectModel.value = res.version;
+      }
+
+      const grouped = res.weights?.grouped || [];
 
       // Gráfico de Barras
       const ctxBar = document.getElementById("chartWeightsGrouped");
@@ -353,6 +364,49 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Trocar modelo corrente
+  async function setActiveModel(versionTag) {
+    if (!versionTag) return;
+    try {
+      const resp = await fetch("/api/models/activate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ version: versionTag })
+      });
+      const res = await resp.json();
+      if (!res.success) throw new Error(res.error);
+
+      showToast(`✓ Modelo '${versionTag}' ativado como modelo corrente!`);
+      await loadModels();
+      await loadDashboard(versionTag);
+    } catch (err) {
+      showToast("Erro ao definir modelo corrente: " + err.message);
+    }
+  }
+
+  // Apagar modelo criado
+  async function deleteModel(versionTag) {
+    if (!versionTag) return;
+    const confirmDelete = window.confirm(`Deseja realmente apagar o modelo "${versionTag}"?\nEsta ação excluirá o arquivo treinado permanentemente.`);
+    if (!confirmDelete) return;
+
+    try {
+      const resp = await fetch("/api/models/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ version: versionTag })
+      });
+      const res = await resp.json();
+      if (!res.success) throw new Error(res.error);
+
+      showToast(`✓ Modelo '${versionTag}' excluído com sucesso!`);
+      await loadModels();
+      await loadDashboard();
+    } catch (err) {
+      showToast("Erro ao excluir modelo: " + err.message);
+    }
+  }
+
   // Modelos & Treinamento
   async function loadModels() {
     try {
@@ -362,15 +416,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
       state.models = res.models || [];
       const active = state.models.find(m => m.is_active);
-      if (active) {
-        elements.activeModelLabel.textContent = `Modelo: ${active.version} (${active.best_algorithm})`;
+      state.activeVersion = active ? active.version : (state.models[0]?.version || null);
+
+      // Topbar Select
+      if (elements.topbarSelectModel) {
+        elements.topbarSelectModel.innerHTML = state.models.map(m => `
+          <option value="${m.version}" ${m.is_active ? 'selected' : ''}>
+            ${m.version} (${m.best_algorithm})${m.is_active ? ' ★' : ''}
+          </option>
+        `).join("");
       }
 
-      elements.selectModelVersion.innerHTML = state.models.map(m => `
-        <option value="${m.version}" ${m.is_active ? 'selected' : ''}>
-          ${m.version} ${m.is_active ? '(Ativo)' : ''}
-        </option>
-      `).join("");
+      // Predição Select
+      if (elements.selectModelVersion) {
+        elements.selectModelVersion.innerHTML = state.models.map(m => `
+          <option value="${m.version}" ${m.is_active ? 'selected' : ''}>
+            ${m.version} ${m.is_active ? '(Corrente)' : ''}
+          </option>
+        `).join("");
+      }
+
+      // Dashboard Model Picker Select
+      if (elements.dashSelectModel) {
+        elements.dashSelectModel.innerHTML = state.models.map(m => `
+          <option value="${m.version}" ${m.is_active ? 'selected' : ''}>
+            ${m.version} ${m.is_active ? '(Corrente)' : ''}
+          </option>
+        `).join("");
+      }
+
+      const canDelete = state.models.length > 1;
 
       elements.tableModelsBody.innerHTML = state.models.map(m => {
         let splitText = "80% / 20%";
@@ -382,30 +457,36 @@ document.addEventListener("DOMContentLoaded", () => {
           const te = 100 - tr;
           splitText = `${tr}% / ${te}%`;
         }
+
+        const isCurrent = m.is_active;
+
         return `
-        <tr>
+        <tr class="${isCurrent ? 'row-current-active' : ''}">
           <td><strong>${m.version}</strong></td>
           <td>${m.best_algorithm}</td>
           <td><span class="split-pill-sm">${splitText}</span></td>
-          <td>${m.best_metrics?.MAE || '--'}%</td>
-          <td>${m.is_active ? '<span class="tag-active-sm">● Ativo</span>' : '<span style="color:#64748b">Inativo</span>'}</td>
+          <td>${m.best_metrics?.MAE !== undefined ? m.best_metrics.MAE : '--'}%</td>
+          <td>${isCurrent ? '<span class="tag-active-sm">★ Corrente</span>' : '<span style="color:#64748b">Inativo</span>'}</td>
           <td>
-            ${m.is_active ? '-' : `<button class="btn-activate-sm" data-v="${m.version}">Ativar</button>`}
+            <div class="actions-cell">
+              ${isCurrent ? '' : `<button type="button" class="btn-activate-sm" data-v="${m.version}" title="Tornar este modelo o modelo corrente">⭐ Ativar</button>`}
+              <button type="button" class="btn-delete-sm" data-v="${m.version}" title="${canDelete ? 'Excluir modelo permanentemente' : 'Não é possível excluir o único modelo existente'}" ${canDelete ? '' : 'disabled style="opacity:0.35;cursor:not-allowed;"'}>🗑️ Excluir</button>
+            </div>
           </td>
         </tr>
       `;}).join("");
 
-      document.querySelectorAll(".btn-activate-sm").forEach(b => {
-        b.addEventListener("click", async () => {
+      document.querySelectorAll(".btn-activate-sm[data-v]").forEach(b => {
+        b.addEventListener("click", () => {
           const v = b.getAttribute("data-v");
-          await fetch("/api/models/activate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ version: v })
-          });
-          showToast(`Versão '${v}' ativada!`);
-          loadModels();
-          loadDashboard();
+          setActiveModel(v);
+        });
+      });
+
+      document.querySelectorAll(".btn-delete-sm[data-v]").forEach(b => {
+        b.addEventListener("click", () => {
+          const v = b.getAttribute("data-v");
+          deleteModel(v);
         });
       });
 
@@ -494,6 +575,33 @@ document.addEventListener("DOMContentLoaded", () => {
       showToast("Falha no treino: " + err.message);
     }
   });
+
+  // Listeners para trocar modelo ativo a partir de diferentes pontos da tela
+  if (elements.topbarSelectModel) {
+    elements.topbarSelectModel.addEventListener("change", (e) => {
+      setActiveModel(e.target.value);
+    });
+  }
+
+  if (elements.btnMakeCurrentPredict) {
+    elements.btnMakeCurrentPredict.addEventListener("click", () => {
+      const v = elements.selectModelVersion ? elements.selectModelVersion.value : null;
+      if (v) setActiveModel(v);
+    });
+  }
+
+  if (elements.dashSelectModel) {
+    elements.dashSelectModel.addEventListener("change", (e) => {
+      loadDashboard(e.target.value);
+    });
+  }
+
+  if (elements.btnDashSetCurrent) {
+    elements.btnDashSetCurrent.addEventListener("click", () => {
+      const v = elements.dashSelectModel ? elements.dashSelectModel.value : null;
+      if (v) setActiveModel(v);
+    });
+  }
 
   // Inicialização
   loadModels();

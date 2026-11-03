@@ -1,0 +1,568 @@
+{
+  "active_version": "v_20261031_180700",
+  "models": [
+    {
+      "version": "v_20261031_180700",
+      "filename": "modelo_v_20261031_180700.joblib",
+      "created_at": "2026-10-31 18:07:03",
+      "best_algorithm": "HistGradientBoosting",
+      "best_metrics": {
+        "MAE": 3.243,
+        "RMSE": 4.267,
+        "R2": 0.372
+      },
+      "all_algorithms_comparison": {
+        "RandomForest": {
+          "MAE": 3.44,
+          "RMSE": 4.463,
+          "R2": 0.312
+        },
+        "GradientBoosting": {
+          "MAE": 3.339,
+          "RMSE": 4.192,
+          "R2": 0.393
+        },
+        "Ridge": {
+          "MAE": 3.332,
+          "RMSE": 4.249,
+          "R2": 0.377
+        },
+        "HistGradientBoosting": {
+          "MAE": 3.243,
+          "RMSE": 4.267,
+          "R2": 0.372
+        }
+      },
+      "total_samples": 500,
+      "train_samples": 400,
+      "test_samples": 100,
+      "target_mean": 12.48,
+      "target_min": 0.0,
+      "target_max": 34.9,
+      "weights": {
+        "grouped": [
+          {
+            "feature": "Dia da Semana",
+            "weight_pct": 36.84
+          },
+          {
+            "feature": "Clima",
+            "weight_pct": 21.05
+          },
+          {
+            "feature": "TURNO",
+            "weight_pct": 15.79
+          },
+          {
+            "feature": "Jogos Futebol",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Choveu?",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Feriado (antes)",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Feriado (depois)",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Trânsito",
+            "weight_pct": 5.26
+          }
+        ],
+        "detailed": [
+          {
+            "feature": "Jogos Futebol",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Choveu?",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Feriado (antes)",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Feriado (depois)",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Trânsito",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Clima_Chuvoso",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Clima_Ensolarado",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Clima_Nublado",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Clima_Parcialmente nublado",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Dia da Semana_Domingo",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Dia da Semana_Quarta",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Dia da Semana_Quinta",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Dia da Semana_Segunda",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Dia da Semana_Sexta",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Dia da Semana_Sábado",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Dia da Semana_Terça",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "TURNO_Manhã",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "TURNO_Noite",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "TURNO_Tarde",
+            "weight_pct": 5.26
+          }
+        ]
+      }
+    },
+    {
+      "version": "v_20261031_180628",
+      "filename": "modelo_v_20261031_180628.joblib",
+      "created_at": "2026-10-31 18:06:30",
+      "best_algorithm": "HistGradientBoosting",
+      "best_metrics": {
+        "MAE": 3.243,
+        "RMSE": 4.267,
+        "R2": 0.372
+      },
+      "all_algorithms_comparison": {
+        "RandomForest": {
+          "MAE": 3.44,
+          "RMSE": 4.463,
+          "R2": 0.312
+        },
+        "GradientBoosting": {
+          "MAE": 3.339,
+          "RMSE": 4.192,
+          "R2": 0.393
+        },
+        "Ridge": {
+          "MAE": 3.332,
+          "RMSE": 4.249,
+          "R2": 0.377
+        },
+        "HistGradientBoosting": {
+          "MAE": 3.243,
+          "RMSE": 4.267,
+          "R2": 0.372
+        }
+      },
+      "total_samples": 500,
+      "train_samples": 400,
+      "test_samples": 100,
+      "target_mean": 12.48,
+      "target_min": 0.0,
+      "target_max": 34.9,
+      "weights": {
+        "grouped": [
+          {
+            "feature": "Dia da Semana",
+            "weight_pct": 36.84
+          },
+          {
+            "feature": "Clima",
+            "weight_pct": 21.05
+          },
+          {
+            "feature": "TURNO",
+            "weight_pct": 15.79
+          },
+          {
+            "feature": "Jogos Futebol",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Choveu?",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Feriado (antes)",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Feriado (depois)",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Trânsito",
+            "weight_pct": 5.26
+          }
+        ],
+        "detailed": [
+          {
+            "feature": "Jogos Futebol",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Choveu?",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Feriado (antes)",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Feriado (depois)",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Trânsito",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Clima_Chuvoso",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Clima_Ensolarado",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Clima_Nublado",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Clima_Parcialmente nublado",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Dia da Semana_Domingo",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Dia da Semana_Quarta",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Dia da Semana_Quinta",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Dia da Semana_Segunda",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Dia da Semana_Sexta",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Dia da Semana_Sábado",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "Dia da Semana_Terça",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "TURNO_Manhã",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "TURNO_Noite",
+            "weight_pct": 5.26
+          },
+          {
+            "feature": "TURNO_Tarde",
+            "weight_pct": 5.26
+          }
+        ]
+      }
+    },
+    {
+      "version": "v2.0-teste-200",
+      "filename": "modelo_v2.0-teste-200.joblib",
+      "created_at": "2026-10-31 17:49:42",
+      "best_algorithm": "Ridge",
+      "best_metrics": {
+        "MAE": 3.377,
+        "RMSE": 4.259,
+        "R2": 0.478
+      },
+      "all_algorithms_comparison": {
+        "RandomForest": {
+          "MAE": 4.086,
+          "RMSE": 4.933,
+          "R2": 0.299
+        },
+        "GradientBoosting": {
+          "MAE": 3.837,
+          "RMSE": 4.74,
+          "R2": 0.353
+        },
+        "Ridge": {
+          "MAE": 3.377,
+          "RMSE": 4.259,
+          "R2": 0.478
+        },
+        "HistGradientBoosting": {
+          "MAE": 3.956,
+          "RMSE": 4.735,
+          "R2": 0.354
+        }
+      },
+      "total_samples": 200,
+      "train_samples": 160,
+      "test_samples": 40,
+      "target_mean": 12.16,
+      "target_min": 0.0,
+      "target_max": 30.3,
+      "weights": {
+        "grouped": [
+          {
+            "feature": "Dia da Semana",
+            "weight_pct": 33.81
+          },
+          {
+            "feature": "Clima",
+            "weight_pct": 18.22
+          },
+          {
+            "feature": "Feriado (antes)",
+            "weight_pct": 12.58
+          },
+          {
+            "feature": "TURNO",
+            "weight_pct": 10.43
+          },
+          {
+            "feature": "Choveu?",
+            "weight_pct": 9.11
+          },
+          {
+            "feature": "Jogos Futebol",
+            "weight_pct": 7.96
+          },
+          {
+            "feature": "Feriado (depois)",
+            "weight_pct": 5.2
+          },
+          {
+            "feature": "Trânsito",
+            "weight_pct": 2.69
+          }
+        ],
+        "detailed": [
+          {
+            "feature": "Feriado (antes)",
+            "weight_pct": 12.58
+          },
+          {
+            "feature": "Dia da Semana_Sábado",
+            "weight_pct": 9.73
+          },
+          {
+            "feature": "Choveu?",
+            "weight_pct": 9.11
+          },
+          {
+            "feature": "Clima_Chuvoso",
+            "weight_pct": 9.11
+          },
+          {
+            "feature": "Jogos Futebol",
+            "weight_pct": 7.96
+          },
+          {
+            "feature": "Dia da Semana_Domingo",
+            "weight_pct": 7.17
+          },
+          {
+            "feature": "Clima_Parcialmente nublado",
+            "weight_pct": 5.3
+          },
+          {
+            "feature": "Dia da Semana_Quinta",
+            "weight_pct": 5.24
+          },
+          {
+            "feature": "TURNO_Noite",
+            "weight_pct": 5.21
+          },
+          {
+            "feature": "Feriado (depois)",
+            "weight_pct": 5.2
+          },
+          {
+            "feature": "Dia da Semana_Segunda",
+            "weight_pct": 4.3
+          },
+          {
+            "feature": "Dia da Semana_Quarta",
+            "weight_pct": 3.82
+          },
+          {
+            "feature": "TURNO_Manhã",
+            "weight_pct": 2.91
+          },
+          {
+            "feature": "Dia da Semana_Sexta",
+            "weight_pct": 2.76
+          },
+          {
+            "feature": "Trânsito",
+            "weight_pct": 2.69
+          },
+          {
+            "feature": "Clima_Nublado",
+            "weight_pct": 2.4
+          },
+          {
+            "feature": "TURNO_Tarde",
+            "weight_pct": 2.3
+          },
+          {
+            "feature": "Clima_Ensolarado",
+            "weight_pct": 1.41
+          },
+          {
+            "feature": "Dia da Semana_Terça",
+            "weight_pct": 0.79
+          }
+        ]
+      }
+    },
+    {
+      "version": "v1.0-default-1500",
+      "filename": "modelo_falta_escola_1500.joblib",
+      "created_at": "2026-10-31 12:00:00",
+      "description": "Modelo inicial treinado na base de 1.500 registros de São Paulo",
+      "best_algorithm": "RandomForest",
+      "best_metrics": {
+        "MAE": 2.15,
+        "RMSE": 3.02,
+        "R2": 0.68
+      },
+      "total_samples": 1500,
+      "target_mean": 12.36,
+      "weights": {
+        "grouped": [
+          {
+            "feature": "TURNO",
+            "weight_pct": 28.5
+          },
+          {
+            "feature": "Clima",
+            "weight_pct": 22.3
+          },
+          {
+            "feature": "Trânsito",
+            "weight_pct": 18.7
+          },
+          {
+            "feature": "Dia da Semana",
+            "weight_pct": 12.4
+          },
+          {
+            "feature": "Choveu?",
+            "weight_pct": 8.1
+          },
+          {
+            "feature": "Feriado (depois)",
+            "weight_pct": 4.6
+          },
+          {
+            "feature": "Feriado (antes)",
+            "weight_pct": 3.2
+          },
+          {
+            "feature": "Jogos Futebol",
+            "weight_pct": 2.2
+          }
+        ],
+        "detailed": [
+          {
+            "feature": "cat__TURNO_Noite",
+            "weight_pct": 15.2
+          },
+          {
+            "feature": "cat__Clima_Chuvoso",
+            "weight_pct": 14.1
+          },
+          {
+            "feature": "num__Trânsito",
+            "weight_pct": 18.7
+          },
+          {
+            "feature": "cat__TURNO_Manhã",
+            "weight_pct": 9.8
+          },
+          {
+            "feature": "num__Choveu?",
+            "weight_pct": 8.1
+          },
+          {
+            "feature": "cat__Clima_Nublado",
+            "weight_pct": 5.4
+          },
+          {
+            "feature": "cat__Dia da Semana_Sexta",
+            "weight_pct": 4.9
+          },
+          {
+            "feature": "num__Feriado (depois)",
+            "weight_pct": 4.6
+          },
+          {
+            "feature": "cat__TURNO_Tarde",
+            "weight_pct": 3.5
+          },
+          {
+            "feature": "num__Feriado (antes)",
+            "weight_pct": 3.2
+          },
+          {
+            "feature": "cat__Clima_Ensolarado",
+            "weight_pct": 2.8
+          },
+          {
+            "feature": "num__Jogos Futebol",
+            "weight_pct": 2.2
+          },
+          {
+            "feature": "cat__Dia da Semana_Segunda",
+            "weight_pct": 2.1
+          }
+        ]
+      }
+    }
+  ]
+}

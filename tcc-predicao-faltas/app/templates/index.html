@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduPredict • Predição de Faltas Escolares</title>
+  
+  <!-- Fontes Google -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="app-layout">
+    
+    <!-- Topbar Clean -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-icon">🎓</span>
+        <div class="brand-text">
+          <h1>EduPredict</h1>
+          <span class="brand-badge">IA & Dados Abertos</span>
+        </div>
+      </div>
+
+      <nav class="nav-tabs">
+        <button class="nav-tab active" data-tab="tab-predict">🔮 Predição</button>
+        <button class="nav-tab" data-tab="tab-dashboard">📊 Pesos & Métricas</button>
+        <button class="nav-tab" data-tab="tab-train">🚀 Treinar Modelo</button>
+      </nav>
+
+      <div class="active-model-tag" id="activeModelTag">
+        <span class="dot"></span>
+        <span id="activeModelLabel">Modelo: Carregando...</span>
+      </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-content">
+
+      <!-- ================= ABA 1: PREDIÇÃO (CLEAN & MINIMALISTA) ================= -->
+      <section class="tab-panel active" id="tab-predict">
+        <div class="clean-grid">
+          
+          <!-- Formulário -->
+          <div class="panel-card">
+            <div class="card-top">
+              <div>
+                <h2>Simulador de Faltas</h2>
+                <p class="subtitle">Selecione os parâmetros ou preencha automaticamente via APIs abertas.</p>
+              </div>
+              <button type="button" class="btn-api-auto" id="btnAutoOpenData" title="Consulta clima (Open-Meteo), feriados (BrasilAPI) e futebol (ESPN)">
+                ⚡ Preencher via Dados Abertos
+              </button>
+            </div>
+
+            <form id="formPrediction">
+              <div class="input-row">
+                <div class="input-field">
+                  <label for="inputDate">Data de Referência</label>
+                  <input type="date" id="inputDate" class="control">
+                </div>
+
+                <div class="input-field">
+                  <label for="inputTurno">Turno Escolar</label>
+                  <select id="inputTurno" class="control">
+                    <option value="Manhã" selected>Manhã</option>
+                    <option value="Tarde">Tarde</option>
+                    <option value="Noite">Noite</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="input-row">
+                <div class="input-field">
+                  <label for="inputClima">Clima Previsto</label>
+                  <select id="inputClima" class="control">
+                    <option value="Ensolarado" selected>☀️ Ensolarado</option>
+                    <option value="Parcialmente nublado">⛅ Parcialmente nublado</option>
+                    <option value="Nublado">☁️ Nublado</option>
+                    <option value="Chuvoso">🌧️ Chuvoso</option>
+                  </select>
+                </div>
+
+                <div class="input-field">
+                  <label for="inputDiaSemana">Dia da Semana</label>
+                  <select id="inputDiaSemana" class="control">
+                    <option value="Segunda">Segunda-feira</option>
+                    <option value="Terça">Terça-feira</option>
+                    <option value="Quarta" selected>Quarta-feira</option>
+                    <option value="Quinta">Quinta-feira</option>
+                    <option value="Sexta">Sexta-feira</option>
+                    <option value="Sábado">Sábado</option>
+                    <option value="Domingo">Domingo</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Trânsito -->
+              <div class="slider-field">
+                <div class="slider-header">
+                  <label for="inputTransito">Intensidade do Trânsito</label>
+                  <span class="slider-val" id="transitoValLabel">Nível 3 (Moderado)</span>
+                </div>
+                <input type="range" id="inputTransito" class="range-slider" min="1" max="5" value="3" step="1">
+                <div class="slider-scale">
+                  <span>1 (Fluido)</span>
+                  <span>3 (Médio)</span>
+                  <span>5 (Intenso)</span>
+                </div>
+              </div>
+
+              <!-- Chips / Opções Rápidas -->
+              <div class="chips-group">
+                <label class="chip">
+                  <input type="checkbox" id="inputChoveu" value="1">
+                  <span class="chip-box">🌧️ Choveu</span>
+                </label>
+                <label class="chip">
+                  <input type="checkbox" id="inputFutebol" value="1">
+                  <span class="chip-box">⚽ Jogos de Futebol</span>
+                </label>
+                <label class="chip">
+                  <input type="checkbox" id="inputFeriadoAntes" value="1">
+                  <span class="chip-box">📅 Véspera de Feriado</span>
+                </label>
+                <label class="chip">
+                  <input type="checkbox" id="inputFeriadoDepois" value="1">
+                  <span class="chip-box">🏖️ Pós-Feriado</span>
+                </label>
+              </div>
+
+              <div class="form-bottom">
+                <div class="version-select-box">
+                  <label for="selectModelVersion">Modelo:</label>
+                  <select id="selectModelVersion" class="control-sm">
+                    <option value="">Padrão</option>
+                  </select>
+                </div>
+
+                <button type="submit" class="btn-predict" id="btnCalculatePrediction">
+                  Calcular Predição
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Resultado (Clean Card) -->
+          <div class="panel-card result-panel">
+            <div class="result-header">
+              <h3>Taxa Prevista de Faltas</h3>
+              <span class="risk-badge" id="resultRiskBadge">Aguardando</span>
+            </div>
+
+            <div class="result-main">
+              <div class="big-percent">
+                <span id="resultPercentage">--</span><span class="unit">%</span>
+              </div>
+              <p class="result-desc" id="resultRiskMessage">Clique em "Calcular Predição" ou use dados abertos para obter a estimativa.</p>
+            </div>
+
+            <!-- Mini Projeção -->
+            <div class="mini-metrics">
+              <div class="mini-metric">
+                <span class="label">Turma (40 alunos)</span>
+                <strong class="value" id="projTurma">--</strong>
+              </div>
+              <div class="mini-metric">
+                <span class="label">Escola (500 alunos)</span>
+                <strong class="value" id="projEscola500">--</strong>
+              </div>
+              <div class="mini-metric">
+                <span class="label">vs Média Base</span>
+                <strong class="value" id="projDiffMean">--</strong>
+              </div>
+            </div>
+
+            <!-- Fatores Principais -->
+            <div class="factors-summary" id="factorsContainer">
+              <span class="factors-label">Fatores Relevantes:</span>
+              <div class="factors-tags" id="factorsList">
+                <span class="tag-empty">Pronto para prever</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Histórico de Predições Clean -->
+        <div class="panel-card history-panel">
+          <div class="history-top">
+            <div>
+              <h3>Histórico de Simulações</h3>
+              <p class="subtitle">Predições calculadas nesta sessão para comparação rápida.</p>
+            </div>
+            <button type="button" class="btn-clear-history" id="btnClearHistory">Limpar Histórico</button>
+          </div>
+
+          <div class="table-container">
+            <table class="clean-table" id="tableHistory">
+              <thead>
+                <tr>
+                  <th>Horário</th>
+                  <th>Turno</th>
+                  <th>Dia</th>
+                  <th>Clima</th>
+                  <th>Chuva</th>
+                  <th>Trânsito</th>
+                  <th>Contexto</th>
+                  <th>% Previsto</th>
+                  <th>Nível de Risco</th>
+                </tr>
+              </thead>
+              <tbody id="tableHistoryBody">
+                <tr><td colspan="9" class="empty-cell">Nenhuma predição realizada ainda. Faça uma simulação acima.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= ABA 2: DASHBOARD DE PESOS ================= -->
+      <section class="tab-panel" id="tab-dashboard">
+        <div class="dashboard-top-info">
+          <div>
+            <h2>Pesos das Variáveis no Modelo</h2>
+            <p class="subtitle">Influência percentual de cada variável na taxa de faltas calculada pelo algoritmo.</p>
+          </div>
+          <div class="model-stats-inline">
+            <span>Algoritmo: <strong id="dashActiveAlgo">--</strong></span>
+            <span>Erro MAE: <strong id="dashActiveMae">--</strong></span>
+            <span>Acurácia R²: <strong id="dashActiveR2">--</strong></span>
+          </div>
+        </div>
+
+        <div class="charts-row">
+          <div class="panel-card chart-card">
+            <h3>Importância por Variável (%)</h3>
+            <div class="chart-wrapper">
+              <canvas id="chartWeightsGrouped"></canvas>
+            </div>
+          </div>
+
+          <div class="panel-card chart-card">
+            <h3>Distribuição Relativa</h3>
+            <div class="chart-wrapper">
+              <canvas id="chartWeightsDonut"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= ABA 3: TREINAMENTO & MODELOS ================= -->
+      <section class="tab-panel" id="tab-train">
+        <div class="train-grid">
+          
+          <!-- Upload & Treino -->
+          <div class="panel-card">
+            <h2>Treinar Novo Modelo</h2>
+            <p class="subtitle">Faça upload de um CSV com histórico escolar para treinar e versionar uma nova IA.</p>
+
+            <form id="formTraining" enctype="multipart/form-data" class="train-form">
+              <div class="input-field">
+                <label for="inputVersionName">Nome da Versão</label>
+                <input type="text" id="inputVersionName" class="control" placeholder="Ex: v2.0-semestre2">
+              </div>
+
+              <div class="input-field">
+                <label>Arquivo CSV de Treino</label>
+                <div class="file-picker">
+                  <input type="file" id="inputCsvFile" name="file" accept=".csv">
+                  <span id="filePickerText">Selecionar arquivo CSV...</span>
+                </div>
+              </div>
+
+              <div class="input-field">
+                <label for="selectDefaultDataset">Ou usar base existente</label>
+                <select id="selectDefaultDataset" class="control">
+                  <option value="">-- Escolha um dataset do projeto se não enviar CSV --</option>
+                </select>
+              </div>
+
+              <button type="submit" class="btn-predict" id="btnStartTraining">
+                Iniciar Treinamento
+              </button>
+            </form>
+
+            <div class="train-status hidden" id="trainingLoading">
+              <div class="clean-spinner"></div>
+              <span>Treinando RandomForest, GradientBoosting e Ridge...</span>
+            </div>
+
+            <div class="train-success hidden" id="trainingResultBox">
+              <span id="trainingSuccessMsg"></span>
+            </div>
+          </div>
+
+          <!-- Tabela de Versões -->
+          <div class="panel-card">
+            <h2>Modelos Versionados</h2>
+            <p class="subtitle">Histórico de versões treinadas com opção de ativação em tempo real.</p>
+            
+            <div class="table-container">
+              <table class="clean-table" id="tableModelsRegistry">
+                <thead>
+                  <tr>
+                    <th>Versão</th>
+                    <th>Algoritmo</th>
+                    <th>MAE</th>
+                    <th>Status</th>
+                    <th>Ação</th>
+                  </tr>
+                </thead>
+                <tbody id="tableModelsBody">
+                  <tr><td colspan="5" class="empty-cell">Carregando...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Notificações Toast Discretas -->
+    <div class="toast-box" id="toastContainer"></div>
+
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

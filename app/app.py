@@ -78,8 +78,34 @@ def activate_model():
             return jsonify({"success": False, "error": "Versão não especificada."}), 400
         success = model_service.set_active_version(version)
         if success:
-            return jsonify({"success": True, "message": f"Versão '{version}' ativada com sucesso."})
+            return jsonify({
+                "success": True,
+                "message": f"Versão '{version}' definida como modelo corrente com sucesso!",
+                "active_version": version
+            })
         return jsonify({"success": False, "error": f"Versão '{version}' não encontrada."}), 404
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/models/delete", methods=["POST"])
+@app.route("/api/models/<version>", methods=["DELETE"])
+def delete_model(version=None):
+    try:
+        if not version:
+            data = request.get_json(silent=True) or {}
+            version = data.get("version") or request.form.get("version")
+        if not version:
+            return jsonify({"success": False, "error": "Versão não especificada."}), 400
+        result = model_service.delete_model(version)
+        return jsonify({
+            "success": True,
+            "message": f"Modelo '{version}' excluído com sucesso.",
+            "data": result
+        })
+    except ValueError as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+    except FileNotFoundError as e:
+        return jsonify({"success": False, "error": str(e)}), 404
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 

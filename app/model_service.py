@@ -106,6 +106,56 @@ class ModelService:
             reg["active_version"] = summary["version"]
         self.save_registry(reg)
 
+    def delete_model(self, version_tag: str) -> Dict[str, Any]:
+        """
+        Exclui um modelo registrado e seu arquivo .joblib correspondente.
+        Se o modelo excluído for o ativo, outro modelo disponível é promovido a ativo.
+        """
+        reg = self.get_registry()
+        models = reg.get("models", [])
+
+        target = None
+        for m in models:
+            if m.get("version") == version_tag:
+                target = m
+                break
+
+        if not target:
+            raise FileNotFoundError(f"Versão de modelo '{version_tag}' não encontrada.")
+
+        if len(models) <= 1:
+            raise ValueError("Não é permitido excluir o único modelo existente no sistema.")
+
+        # Remove o arquivo físico .joblib do diretório de modelos
+        filename = target.get("filename")
+        if filename:
+            file_path = os.path.join(MODELS_DIR, filename)
+            if os.path.exists(file_path):
+                try:
+                    os.remove(file_path)
+                except Exception as e:
+                    print(f"Aviso: falha ao remover arquivo de modelo {file_path}: {e}")
+
+        # Invalida cache na memória
+        self.cached_models.pop(version_tag, None)
+
+        # Remove do registro
+        models = [m for m in models if m.get("version") != version_tag]
+        reg["models"] = models
+
+        # Se o modelo excluído era o ativo, ativa o primeiro modelo restante
+        new_active = reg.get("active_version")
+        if reg.get("active_version") == version_tag:
+            new_active = models[0]["version"] if models else None
+            reg["active_version"] = new_active
+
+        self.save_registry(reg)
+        return {
+            "deleted_version": version_tag,
+            "new_active_version": new_active,
+            "remaining_count": len(models)
+        }
+
     def load_pipeline(self, version_tag: Optional[str] = None):
         reg = self.get_registry()
         if not version_tag:

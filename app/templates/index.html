@@ -34,9 +34,12 @@
         <button class="nav-tab" data-tab="tab-train">🚀 Treinar Modelo</button>
       </nav>
 
-      <div class="active-model-tag" id="activeModelTag">
+      <div class="active-model-tag" id="activeModelTag" title="Modelo atualmente ativo para predições">
         <span class="dot"></span>
-        <span id="activeModelLabel">Modelo: Carregando...</span>
+        <label for="topbarSelectModel" class="topbar-label">Modelo Corrente:</label>
+        <select id="topbarSelectModel" class="topbar-select" title="Clique para trocar o modelo corrente">
+          <option value="">Carregando...</option>
+        </select>
       </div>
     </header>
 
@@ -141,6 +144,7 @@
                   <select id="selectModelVersion" class="control-sm">
                     <option value="">Padrão</option>
                   </select>
+                  <button type="button" class="btn-activate-sm" id="btnMakeCurrentPredict" title="Tornar este modelo o modelo corrente">★ Tornar Corrente</button>
                 </div>
 
                 <button type="submit" class="btn-predict" id="btnCalculatePrediction">
@@ -234,6 +238,11 @@
             <p class="subtitle">Influência percentual de cada variável na taxa de faltas calculada pelo algoritmo.</p>
           </div>
           <div class="model-stats-inline">
+            <div class="dash-model-picker">
+              <label for="dashSelectModel">Ver modelo:</label>
+              <select id="dashSelectModel" class="control-sm"></select>
+              <button type="button" id="btnDashSetCurrent" class="btn-activate-sm" title="Definir este modelo como corrente">★ Tornar Corrente</button>
+            </div>
             <span>Algoritmo: <strong id="dashActiveAlgo">--</strong></span>
             <span>Erro MAE: <strong id="dashActiveMae">--</strong></span>
             <span>Acurácia R²: <strong id="dashActiveR2">--</strong></span>
@@ -332,7 +341,7 @@
                     <th>Divisão</th>
                     <th>MAE</th>
                     <th>Status</th>
-                    <th>Ação</th>
+                    <th>Ações</th>
                   </tr>
                 </thead>
                 <tbody id="tableModelsBody">

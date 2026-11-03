@@ -608,25 +608,99 @@ body {
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
-.btn-activate-sm {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--border);
+.topbar-label {
+  font-size: 0.76rem;
   color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.topbar-select {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  padding: 0.15rem 0.25rem;
+}
+
+.topbar-select option {
+  background: #182238;
+  color: #fff;
+}
+
+.actions-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.btn-activate-sm {
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  color: #93c5fd;
   padding: 0.25rem 0.55rem;
   border-radius: 4px;
   font-size: 0.72rem;
   cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
 }
 
 .btn-activate-sm:hover {
+  background: var(--accent);
   color: #fff;
   border-color: var(--accent);
+}
+
+.btn-delete-sm {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  color: #fca5a5;
+  padding: 0.25rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-delete-sm:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: #ef4444;
+  color: #fff;
+}
+
+.row-current-active {
+  background: rgba(59, 130, 246, 0.06);
+}
+
+.dash-model-picker {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.dash-model-picker label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
 }
 
 .tag-active-sm {
   color: var(--risk-low);
   font-weight: 600;
   font-size: 0.75rem;
+  background: rgba(16, 185, 129, 0.12);
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  display: inline-block;
+  white-space: nowrap;
 }
 
 /* Loading & Toast */

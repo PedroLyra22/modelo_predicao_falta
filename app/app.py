@@ -1,6 +1,6 @@
 import os
 import datetime
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file
 from werkzeug.utils import secure_filename
 from app.model_service import ModelService, BASE_DIR, MODELS_DIR
 from app.trainer import train_and_evaluate_models, extract_feature_importances
@@ -122,6 +122,19 @@ def list_default_datasets():
                 "size_kb": size_kb
             })
     return jsonify({"success": True, "datasets": csv_files})
+
+@app.route("/api/download-template", methods=["GET"])
+def download_template():
+    """Permite baixar a planilha modelo CSV para treinamento."""
+    template_path = os.path.join(BASE_DIR, "app", "static", "template_treinamento_modelo.csv")
+    if not os.path.exists(template_path):
+        return jsonify({"success": False, "error": "Arquivo template não encontrado."}), 404
+    return send_file(
+        template_path,
+        mimetype="text/csv",
+        as_attachment=True,
+        download_name="template_treinamento_modelo.csv"
+    )
 
 @app.route("/api/train", methods=["POST"])
 def train():

@@ -526,6 +526,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Notificação amigável ao baixar template
+  const btnDownloadTemplate = document.getElementById("btnDownloadTemplate");
+  if (btnDownloadTemplate) {
+    btnDownloadTemplate.addEventListener("click", () => {
+      showToast("Download da planilha modelo CSV iniciado!");
+    });
+  }
+
   // Treinamento
   elements.formTraining.addEventListener("submit", async (e) => {
     e.preventDefault();

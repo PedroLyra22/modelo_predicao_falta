@@ -272,8 +272,15 @@
           
           <!-- Upload & Treino -->
           <div class="panel-card">
-            <h2>Treinar Novo Modelo</h2>
-            <p class="subtitle">Faça upload de um CSV com histórico escolar para treinar e versionar uma nova IA.</p>
+            <div class="card-top">
+              <div>
+                <h2>Treinar Novo Modelo</h2>
+                <p class="subtitle">Faça upload de um CSV com histórico escolar para treinar e versionar uma nova IA.</p>
+              </div>
+              <a href="/api/download-template" download="template_treinamento_modelo.csv" class="btn-download-template" id="btnDownloadTemplate" title="Baixar planilha modelo CSV para estruturar novos dados">
+                📥 Baixar Template CSV
+              </a>
+            </div>
 
             <form id="formTraining" enctype="multipart/form-data" class="train-form">
               <div class="input-field">
@@ -282,7 +289,12 @@
               </div>
 
               <div class="input-field">
-                <label>Arquivo CSV de Treino</label>
+                <div class="label-with-action">
+                  <label for="inputCsvFile">Arquivo CSV de Treino</label>
+                  <a href="/api/download-template" download="template_treinamento_modelo.csv" class="link-download-template" title="Baixar CSV modelo">
+                    📄 Baixar modelo (.csv)
+                  </a>
+                </div>
                 <div class="file-picker">
                   <input type="file" id="inputCsvFile" name="file" accept=".csv">
                   <span id="filePickerText">Selecionar arquivo CSV...</span>

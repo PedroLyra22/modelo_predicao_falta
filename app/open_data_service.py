@@ -2,13 +2,11 @@ import datetime
 import requests
 from typing import Dict, Any, List
 
-# Coordenadas padrão (São Paulo - SP: Centro / Praça da Sé)
 DEFAULT_LAT = -23.5505
 DEFAULT_LON = -46.6333
-DEFAULT_CITY_CODE_CPTEC = 244  # São Paulo no CPTEC/INPE
+DEFAULT_CITY_CODE_CPTEC = 244
 
 def get_weather_category(weather_code: int, precipitation: float) -> str:
-    """Mapeia os códigos WMO para as categorias do modelo."""
     if precipitation > 0.5 or weather_code in [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99]:
         return "Chuvoso"
     elif weather_code in [0, 1]:
@@ -28,7 +26,6 @@ def get_day_of_week_pt(date_obj: datetime.date) -> str:
     }
     return days.get(date_obj.weekday(), "Segunda")
 
-# 1. API Open-Meteo Weather
 def fetch_open_weather(date_str: str, lat: float, lon: float) -> Dict[str, Any]:
     try:
         url = (
@@ -68,7 +65,6 @@ def fetch_open_weather(date_str: str, lat: float, lon: float) -> Dict[str, Any]:
         print(f"Erro Open-Meteo: {e}")
     return {"active": False, "clima": "Ensolarado", "choveu": 0, "precipitation_mm": 0.0, "api": "Open-Meteo Weather API"}
 
-# 2. API BrasilAPI CPTEC / INPE
 def fetch_cptec_weather() -> Dict[str, Any]:
     try:
         url = f"https://brasilapi.com.br/api/cptec/v1/clima/previsao/{DEFAULT_CITY_CODE_CPTEC}"
@@ -82,7 +78,6 @@ def fetch_cptec_weather() -> Dict[str, Any]:
         print(f"Erro CPTEC: {e}")
     return {"active": False, "cptec_desc": "Normal", "api": "BrasilAPI CPTEC/INPE"}
 
-# 3. API BrasilAPI Feriados Nacionais
 def fetch_brasil_api_holidays(date_obj: datetime.date) -> Dict[str, Any]:
     try:
         url = f"https://brasilapi.com.br/api/feriados/v1/{date_obj.year}"
@@ -95,7 +90,6 @@ def fetch_brasil_api_holidays(date_obj: datetime.date) -> Dict[str, Any]:
             feriado_antes = 1 if day_before in holidays else 0
             feriado_depois = 1 if day_after in holidays else 0
 
-            # Pontes em segundas e sextas
             if date_obj.weekday() == 0 and (date_obj - datetime.timedelta(days=3)).isoformat() in holidays:
                 feriado_antes = 1
             elif date_obj.weekday() == 4 and (date_obj + datetime.timedelta(days=3)).isoformat() in holidays:
@@ -112,7 +106,6 @@ def fetch_brasil_api_holidays(date_obj: datetime.date) -> Dict[str, Any]:
         print(f"Erro BrasilAPI Feriados: {e}")
     return {"active": False, "is_holiday_today": 0, "feriado_antes": 0, "feriado_depois": 0, "api": "BrasilAPI Feriados"}
 
-# 4. API ESPN Soccer Scoreboard (Futebol)
 def fetch_espn_soccer(date_obj: datetime.date) -> Dict[str, Any]:
     try:
         date_formatted = date_obj.strftime("%Y%m%d")
@@ -133,7 +126,6 @@ def fetch_espn_soccer(date_obj: datetime.date) -> Dict[str, Any]:
     has_fallback = 1 if date_obj.weekday() in [2, 5, 6] else 0
     return {"active": False, "jogos_futebol": has_fallback, "qtd_jogos": 0, "api": "ESPN Scoreboard Open API"}
 
-# 5. API Open-Meteo Air Quality (Monóxido de Carbono e Poluição Veicular)
 def fetch_air_quality(lat: float, lon: float) -> Dict[str, Any]:
     try:
         url = f"https://air-quality-api.open-meteo.com/v1/air-quality?latitude={lat}&longitude={lon}&current=carbon_monoxide,european_aqi"
@@ -147,7 +139,6 @@ def fetch_air_quality(lat: float, lon: float) -> Dict[str, Any]:
         print(f"Erro Air Quality: {e}")
     return {"active": False, "co_level": 300.0, "aqi": 60, "api": "Open-Meteo Air Quality API"}
 
-# 6. API Open-Meteo Flood (Risco de Alagamento em Rios Urbanos Tietê/Pinheiros)
 def fetch_flood_risk(lat: float, lon: float) -> Dict[str, Any]:
     try:
         url = f"https://flood-api.open-meteo.com/v1/flood?latitude={lat}&longitude={lon}&daily=river_discharge"
@@ -160,7 +151,6 @@ def fetch_flood_risk(lat: float, lon: float) -> Dict[str, Any]:
         print(f"Erro Flood: {e}")
     return {"active": False, "river_discharge": 15.0, "api": "Open-Meteo Flood & Rivers API"}
 
-# 7. API Sunrise-Sunset (Luz Solar e Horários do Turno)
 def fetch_sunrise_sunset(lat: float, lon: float) -> Dict[str, Any]:
     try:
         url = f"https://api.sunrise-sunset.org/json?lat={lat}&lng={lon}&formatted=0"
@@ -177,7 +167,6 @@ def fetch_sunrise_sunset(lat: float, lon: float) -> Dict[str, Any]:
         print(f"Erro Sunrise: {e}")
     return {"active": False, "api": "Sunrise-Sunset Open API"}
 
-# 8. API IBGE Localidades
 def fetch_ibge_city() -> Dict[str, Any]:
     try:
         url = "https://servicodados.ibge.gov.br/api/v1/localidades/municipios/3550308"
@@ -197,7 +186,6 @@ def calculate_traffic_level(
     co_level: float,
     river_discharge: float
 ) -> int:
-    """Calcula nível de trânsito de 1 a 5 cruzando dia, turno, chuva, poluição e alagamento."""
     weekday = date_obj.weekday()
     if weekday in [5, 6]:
         base = 2
@@ -212,7 +200,7 @@ def calculate_traffic_level(
         base += 1
     if co_level > 400.0:
         base += 1
-    if river_discharge > 25.0:  # Alerta de cheia nos rios Tietê/Pinheiros
+    if river_discharge > 25.0:
         base += 1
 
     return max(1, min(5, base))
@@ -224,7 +212,6 @@ def get_complete_open_data(
     turno: str = "Manhã",
     location_query: str = None
 ) -> Dict[str, Any]:
-    """Consulta agregada de 8 APIs abertas."""
     if not date_str:
         date_obj = datetime.date.today()
     else:
@@ -233,7 +220,6 @@ def get_complete_open_data(
     lat = lat if lat is not None else DEFAULT_LAT
     lon = lon if lon is not None else DEFAULT_LON
 
-    # Executa consultas
     w_data = fetch_open_weather(date_obj.isoformat(), lat, lon)
     cptec_data = fetch_cptec_weather()
     h_data = fetch_brasil_api_holidays(date_obj)
@@ -243,7 +229,6 @@ def get_complete_open_data(
     sun_data = fetch_sunrise_sunset(lat, lon)
     ibge_data = fetch_ibge_city()
 
-    # Cálculo do trânsito inteligente com base nos dados cruzados
     transito_calculado = calculate_traffic_level(
         date_obj=date_obj,
         turno=turno,

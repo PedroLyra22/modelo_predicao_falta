@@ -37,7 +37,6 @@ def extract_feature_importances(pipeline: Pipeline) -> Dict[str, Any]:
         prep = pipeline.named_steps["prep"]
         model = pipeline.named_steps["model"]
 
-        # Nomes gerados das colunas transformadas
         num_cols = NUMERIC_FEATURES
         cat_encoder = prep.named_transformers_["cat"]
         cat_cols = cat_encoder.get_feature_names_out(CATEGORICAL_FEATURES).tolist()
@@ -47,13 +46,11 @@ def extract_feature_importances(pipeline: Pipeline) -> Dict[str, Any]:
         if hasattr(model, "feature_importances_"):
             raw_weights = model.feature_importances_
         elif hasattr(model, "coef_"):
-            # Para Ridge / Regressão Linear, usa o valor absoluto dos coeficientes normalizados
             coefs = np.abs(model.coef_)
             total = coefs.sum() if coefs.sum() > 0 else 1.0
             raw_weights = coefs / total
 
         if raw_weights is None:
-            # Fallback uniforme se o modelo não expuser pesos diretos
             raw_weights = [1.0 / len(transformed_names)] * len(transformed_names)
 
         detailed_weights = []
@@ -66,7 +63,6 @@ def extract_feature_importances(pipeline: Pipeline) -> Dict[str, Any]:
                 "weight_pct": val_pct
             })
 
-            # Agrupa pela variável original
             matched = False
             for original in FEATURES:
                 if original in name:
@@ -76,13 +72,11 @@ def extract_feature_importances(pipeline: Pipeline) -> Dict[str, Any]:
             if not matched:
                 grouped_weights["Outros"] = grouped_weights.get("Outros", 0.0) + float(weight)
 
-        # Normaliza e formata agrupados
         grouped_list = [
             {"feature": k, "weight_pct": round(v * 100, 2)}
             for k, v in sorted(grouped_weights.items(), key=lambda x: x[1], reverse=True)
         ]
 
-        # Ordena detalhados
         detailed_weights.sort(key=lambda x: x["weight_pct"], reverse=True)
 
         return {
@@ -91,7 +85,6 @@ def extract_feature_importances(pipeline: Pipeline) -> Dict[str, Any]:
         }
     except Exception as e:
         print(f"Erro ao extrair importâncias: {e}")
-        # Retorna pesos estimados caso o modelo (ex: HistGradientBoosting sem tree importances direto) não exponha
         return {
             "grouped": [{"feature": f, "weight_pct": round(100.0 / len(FEATURES), 2)} for f in FEATURES],
             "detailed": []
@@ -116,13 +109,11 @@ def train_and_evaluate_models(
 
     df = pd.read_csv(csv_path)
 
-    # Validação de colunas
     missing_cols = [c for c in FEATURES if c not in df.columns]
     if missing_cols:
         raise ValueError(f"O CSV não possui as colunas obrigatórias: {missing_cols}")
 
     if TARGET_COL not in df.columns:
-        # Se não houver '%' direto, procura coluna de porcentagem ou de falta
         alt_targets = [c for c in df.columns if "%" in c or "falta" in c.lower()]
         if alt_targets:
             target_to_use = alt_targets[0]
@@ -178,13 +169,11 @@ def train_and_evaluate_models(
             best_name = name
             best_pipeline = pipe
 
-    # Salva o artefato do modelo vencedor
     os.makedirs(output_dir, exist_ok=True)
     filename = f"modelo_{version_tag}.joblib"
     saved_path = os.path.join(output_dir, filename)
     joblib.dump(best_pipeline, saved_path)
 
-    # Pesos calculados
     weights_info = extract_feature_importances(best_pipeline)
 
     train_pct = int(round((1.0 - test_size) * 100))

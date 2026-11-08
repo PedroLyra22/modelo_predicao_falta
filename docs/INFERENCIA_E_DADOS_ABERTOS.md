@@ -1,4 +1,4 @@
-# 🌐 Pipeline de Inferência em Produção e Enriquecimento Automático com APIs de Dados Abertos
+# Pipeline de Inferência em Produção e Enriquecimento Automático com APIs de Dados Abertos
 
 > **Documento Técnico de Arquitetura, Integrações e Utilização Prática**  
 > **Projeto:** EduPredict AI — Sistema Inteligente de Suporte à Decisão no Combate ao Absenteísmo Escolar  

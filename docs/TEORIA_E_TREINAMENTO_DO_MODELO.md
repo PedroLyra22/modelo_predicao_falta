@@ -1,4 +1,4 @@
-# 🎓 Fundamentação Teórica, Engenharia de Features e Treinamento de Modelos Preditivos de Absenteísmo Escolar
+# Fundamentação Teórica, Engenharia de Features e Treinamento de Modelos Preditivos de Absenteísmo Escolar
 
 > **Documento Técnico-Científico para Avaliação Acadêmica em Ciência da Computação**  
 > **Projeto:** EduPredict AI — Sistema Inteligente de Suporte à Decisão no Combate ao Absenteísmo Escolar  

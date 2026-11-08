@@ -17,13 +17,11 @@ class ModelService:
         self._ensure_initial_registry()
 
     def _ensure_initial_registry(self):
-        """Inicializa o registro se não existir ou se estiver vazio."""
         if not os.path.exists(REGISTRY_PATH):
             initial_data = {
                 "active_version": "v1.0-default",
                 "models": []
             }
-            # Se já existir o modelo de 1500 linhas na raiz ou na pasta models, inclui no registro
             source_model_1500 = os.path.join(BASE_DIR, "modelo_falta_escola_1500.joblib")
             dest_model_1500 = os.path.join(MODELS_DIR, "modelo_falta_escola_1500.joblib")
 
@@ -80,7 +78,6 @@ class ModelService:
             if m.get("version") == active:
                 m["is_active"] = True
                 return m
-        # Se nenhum ativo for achado, pega o primeiro
         models = reg.get("models", [])
         if models:
             models[0]["is_active"] = True
@@ -98,7 +95,6 @@ class ModelService:
 
     def register_new_model(self, summary: Dict[str, Any], set_active: bool = True):
         reg = self.get_registry()
-        # Remove versão antiga de mesmo nome se houver
         models = [m for m in reg.get("models", []) if m.get("version") != summary["version"]]
         models.insert(0, summary)
         reg["models"] = models
@@ -107,10 +103,6 @@ class ModelService:
         self.save_registry(reg)
 
     def delete_model(self, version_tag: str) -> Dict[str, Any]:
-        """
-        Exclui um modelo registrado e seu arquivo .joblib correspondente.
-        Se o modelo excluído for o ativo, outro modelo disponível é promovido a ativo.
-        """
         reg = self.get_registry()
         models = reg.get("models", [])
 
@@ -126,7 +118,6 @@ class ModelService:
         if len(models) <= 1:
             raise ValueError("Não é permitido excluir o único modelo existente no sistema.")
 
-        # Remove o arquivo físico .joblib do diretório de modelos
         filename = target.get("filename")
         if filename:
             file_path = os.path.join(MODELS_DIR, filename)
@@ -136,14 +127,11 @@ class ModelService:
                 except Exception as e:
                     print(f"Aviso: falha ao remover arquivo de modelo {file_path}: {e}")
 
-        # Invalida cache na memória
         self.cached_models.pop(version_tag, None)
 
-        # Remove do registro
         models = [m for m in models if m.get("version") != version_tag]
         reg["models"] = models
 
-        # Se o modelo excluído era o ativo, ativa o primeiro modelo restante
         new_active = reg.get("active_version")
         if reg.get("active_version") == version_tag:
             new_active = models[0]["version"] if models else None
@@ -161,7 +149,6 @@ class ModelService:
         if not version_tag:
             version_tag = reg.get("active_version")
 
-        # Busca metadados da versão
         model_meta = None
         for m in reg.get("models", []):
             if m.get("version") == version_tag:
@@ -187,12 +174,8 @@ class ModelService:
         payload: Dict[str, Any],
         version_tag: Optional[str] = None
     ) -> Dict[str, Any]:
-        """
-        Executa a predição da porcentagem de falta escolar.
-        """
         pipeline, meta = self.load_pipeline(version_tag)
 
-        # Monta DataFrame com as colunas esperadas
         row = {
             "Jogos Futebol": int(payload.get("jogos_futebol", 0)),
             "Clima": str(payload.get("clima", "Ensolarado")),
@@ -206,37 +189,32 @@ class ModelService:
 
         df_input = pd.DataFrame([row])[FEATURES]
         pred_val = float(pipeline.predict(df_input)[0])
-        # Garante limites lógicos [0%, 100%]
         pred_val = max(0.0, min(100.0, pred_val))
         pred_val = round(pred_val, 2)
 
-        # Classificação de Risco
         if pred_val < 10.0:
             risk_level = "Baixo"
-            risk_color = "#10b981"  # Verde esmeralda
+            risk_color = "#10b981"
             risk_badge = "success"
             risk_message = "Ausência dentro do esperado. Rotina escolar regular e estável."
         elif pred_val <= 18.0:
             risk_level = "Moderado"
-            risk_color = "#f59e0b"  # Amarelo/Âmbar
+            risk_color = "#f59e0b"
             risk_badge = "warning"
             risk_message = "Atenção recomendada: fatores ambientais ou do calendário elevam a probabilidade de faltas."
         else:
             risk_level = "Crítico / Alto"
-            risk_color = "#ef4444"  # Vermelho
+            risk_color = "#ef4444"
             risk_badge = "danger"
             risk_message = "Alerta de alto absenteísmo! Forte influência de clima adverso, feriados ou trânsito."
 
-        # Projeções práticas de impacto escolar
         sala_40 = round((pred_val / 100.0) * 40)
         escola_500 = round((pred_val / 100.0) * 500)
         escola_1000 = round((pred_val / 100.0) * 1000)
 
-        # Comparação com média histórica
         historical_mean = meta.get("target_mean", 12.36)
         diff_mean = round(pred_val - historical_mean, 2)
 
-        # Fatores de destaque no input
         factors = []
         if row["Choveu?"] == 1 or row["Clima"] == "Chuvoso":
             factors.append({"name": "Chuva / Clima Chuvoso", "impact": "Aumenta absenteísmo (+)"})

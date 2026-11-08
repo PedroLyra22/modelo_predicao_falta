@@ -35,9 +35,54 @@ Sistema inteligente de suporte à decisão educacional para **predição de abse
 
 ---
 
-## 🐳 Executando com Docker (Recomendado)
+## 🚀 Executando Localmente (Sem Docker - Automático)
 
-O projeto está totalmente configurado para rodar com Docker e Docker Compose:
+O projeto conta com um script automatizado que **cria o ambiente virtual (`venv`) automaticamente**, instala todas as dependências e inicializa o servidor:
+
+### 1. Iniciar com 1 comando (Linux / macOS):
+```bash
+./run_local.sh
+```
+> *(Caso necessário, conceda permissão de execução com `chmod +x run_local.sh`)*
+
+O script realiza automaticamente:
+1. Verificação da versão do Python 3 no sistema.
+2. Criação automática da pasta `venv` (se ainda não existir).
+3. Ativação do ambiente virtual (`source venv/bin/activate`).
+4. Instalação e verificação das dependências via `requirements.txt`.
+5. Inicialização da aplicação Flask na porta `5001` (evitando conflito com o AirPlay do macOS na porta 5000).
+
+---
+
+### 2. Executando Passo a Passo Manualmente (Alternativa):
+
+Se preferir executar cada comando manualmente no terminal:
+
+```bash
+# 1. Cria o ambiente virtual
+python3 -m venv venv
+
+# 2. Ativa o ambiente virtual
+source venv/bin/activate  # No Windows: venv\Scripts\activate
+
+# 3. Instala as dependências
+pip install -r requirements.txt
+
+# 4. Inicia o servidor Flask
+python -m app.app
+```
+
+---
+
+### 3. Acessar a Aplicação:
+Abra seu navegador em:
+👉 **[http://localhost:5001](http://localhost:5001)**
+
+---
+
+## 🐳 Executando com Docker (Opcional)
+
+Se preferir rodar em containers Docker:
 
 ### 1. Construir e Iniciar os Containers:
 ```bash
@@ -46,7 +91,7 @@ docker compose up --build
 
 ### 2. Acessar a Aplicação:
 Abra seu navegador em:
-👉 **[http://localhost:5000](http://localhost:5000)**
+👉 **[http://localhost:5001](http://localhost:5001)**
 
 Para parar a execução:
 ```bash
@@ -54,29 +99,6 @@ docker compose down
 ```
 
 > **Nota de Persistência:** O volume `./models` mantém todos os modelos treinados e o registro de versões preservados mesmo após reiniciar o container.
-
----
-
-## 💻 Executando Localmente (Sem Docker)
-
-Se preferir rodar no ambiente Python local:
-
-1. **Crie e ative um ambiente virtual (opcional mas recomendado):**
-```bash
-python3 -m venv venv
-source venv/bin/activate  # No Windows: venv\Scripts\activate
-```
-
-2. **Instale as dependências:**
-```bash
-pip install -r requirements.txt
-```
-
-3. **Inicie o servidor Flask:**
-```bash
-python -m app.app
-```
-Acesse em: `http://localhost:5000`
 
 ---
 
@@ -113,6 +135,7 @@ tcc-predicao-faltas/
 ├── models/
 │   ├── registry.json           # Catálogo versionado de modelos com histórico e métricas
 │   └── modelo_falta_escola_1500.joblib
+├── run_local.sh                # Script de inicialização local com criação automática de venv
 ├── Dockerfile                  # Especificação do container Python 3.11 com Gunicorn
 ├── docker-compose.yml          # Configuração de orquestração e volumes
 ├── requirements.txt            # Dependências Python (Flask, Scikit-learn, Pandas, etc.)

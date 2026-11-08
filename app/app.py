@@ -153,7 +153,6 @@ def train():
             timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             version_name = f"v_{timestamp}"
 
-        # Trata o arquivo: ou upload ou dataset padrão
         csv_path = None
         if "file" in request.files and request.files["file"].filename != "":
             file = request.files["file"]
@@ -169,7 +168,6 @@ def train():
         else:
             return jsonify({"success": False, "error": "Nenhum arquivo CSV enviado e nenhum dataset padrão selecionado."}), 400
 
-        # Treina e avalia modelos
         summary = train_and_evaluate_models(
             csv_path=csv_path,
             output_dir=MODELS_DIR,
@@ -177,7 +175,6 @@ def train():
             test_size=test_size
         )
 
-        # Registra a nova versão
         model_service.register_new_model(summary, set_active=set_active)
 
         return jsonify({
@@ -190,10 +187,6 @@ def train():
 
 @app.route("/api/open-data", methods=["GET"])
 def get_open_data():
-    """
-    Consulta dados em tempo real ou históricos via 5 APIs abertas:
-    Open-Meteo Weather, BrasilAPI, ESPN Futebol, Open-Meteo Air Quality e Nominatim.
-    """
     try:
         date_str = request.args.get("date")
         location_query = request.args.get("location", "").strip()
@@ -217,6 +210,6 @@ def get_open_data():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5001))
-    print(f"\n🚀 Servidor EduPredict AI iniciando em: http://localhost:{port}\n")
+    print(f"\nServidor EduPredict AI iniciando em: http://localhost:{port}\n")
     app.run(host="0.0.0.0", port=port, debug=True)
 

@@ -42,7 +42,6 @@ def get_weights():
         if not weights or not weights.get("grouped"):
             weights = extract_feature_importances(pipeline)
             meta["weights"] = weights
-            # Atualiza no registro
             reg = model_service.get_registry()
             for m in reg.get("models", []):
                 if m.get("version") == meta.get("version"):

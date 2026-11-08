@@ -119,6 +119,26 @@ A aplicação disponibiliza endpoints JSON para integração externa:
 
 ---
 
+## 📚 Documentação Técnica e Artigos Científicos
+
+Para uma compreensão detalhada e aprofundamento voltado à academia de Ciência da Computação, consulte os artigos dedicados:
+
+- 🎓 **[Teoria Matemática, Engenharia de Features e Treinamento](docs/TEORIA_E_TREINAMENTO_DO_MODELO.md)**:
+  - Formulação matemática da tarefa de regressão supervisionada não linear.
+  - Pré-processamento matricial, imputação robusta e dummificação (One-Hot Encoding).
+  - Torneio comparativo dos 4 algoritmos (*Random Forest*, *Gradient Boosting*, *HistGradientBoosting* e *Ridge*).
+  - Critério decisório de métricas ($MAE$, $RMSE$, $R^2$) e teoria de pesos de atributos ($MDI$ e coeficientes normalizados).
+  - Governança de MLOps com versionamento atômico em `registry.json`.
+
+- 🌐 **[Pipeline de Inferência em Produção e Dados Abertos](docs/INFERENCIA_E_DADOS_ABERTOS.md)**:
+  - Ciclo de vida da predição pontual e programática.
+  - Detalhamento das 8 APIs públicas integradas (Open-Meteo, BrasilAPI, ESPN, CPTEC/INPE, etc.).
+  - Algoritmo de fusão sensorial para inferência de congestionamento urbano.
+  - Schema das 11 colunas do CSV e script Python de exemplo para enriquecimento de bases legadas.
+  - Faixas de corte de risco (🟢 Baixo, 🟡 Moderado, 🔴 Crítico) e tomada de decisão escolar.
+
+---
+
 ## 📁 Estrutura do Projeto
 
 ```text

@@ -113,6 +113,7 @@ A aplicação disponibiliza endpoints JSON para integração externa:
 | `GET` | `/api/models` | Lista todos os modelos versionados e qual está ativo em produção. |
 | `POST` | `/api/models/activate` | Define uma versão específica de modelo como o modelo ativo. |
 | `POST` | `/api/train` | Recebe arquivo CSV via formulário multipart e retreina/versiona novo modelo. |
+| `GET` | `/api/download-template` | Faz o download da planilha modelo CSV com cabeçalhos e exemplos para treino. |
 | `GET` | `/api/open-data` | Consulta clima e feriados nas APIs abertas para a data informada. |
 | `GET` | `/api/health` | Health check da aplicação para orquestradores e monitoramento. |
 
@@ -129,7 +130,8 @@ tcc-predicao-faltas/
 │   ├── open_data_service.py    # Integração com APIs abertas (Open-Meteo & BrasilAPI)
 │   ├── static/
 │   │   ├── css/style.css       # Estilização moderna e responsiva (Dark Theme)
-│   │   └── js/app.js           # Lógica do front-end, gráficos Chart.js e AJAX
+│   │   ├── js/app.js           # Lógica do front-end, gráficos Chart.js e AJAX
+│   │   └── template_treinamento_modelo.csv # Planilha modelo para novos treinos
 │   └── templates/
 │       └── index.html          # Interface web unificada com abas
 ├── models/

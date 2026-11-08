@@ -1,0 +1,16 @@
+Data,Presença,Jogos Futebol,Clima,Choveu?,Dia da Semana,Feriado (antes),Feriado (depois),Trânsito,TURNO,TYPE,%
+2024-03-04,1,0,Ensolarado,0,Segunda,0,0,3,Manhã,FALTA,9.5
+2024-03-04,1,0,Ensolarado,0,Segunda,0,0,4,Tarde,FALTA,11.2
+2024-03-04,1,1,Ensolarado,0,Segunda,0,0,2,Noite,FALTA,13.0
+2024-03-05,1,0,Chuvoso,1,Terça,0,0,4,Manhã,FALTA,18.4
+2024-03-05,1,0,Nublado,0,Terça,0,0,3,Tarde,FALTA,12.0
+2024-03-05,1,1,Chuvoso,1,Terça,0,0,5,Noite,FALTA,22.1
+2024-03-06,1,0,Parcialmente nublado,0,Quarta,0,0,3,Manhã,FALTA,8.8
+2024-03-06,1,1,Parcialmente nublado,0,Quarta,0,0,3,Tarde,FALTA,10.5
+2024-03-06,1,0,Nublado,0,Quarta,0,0,2,Noite,FALTA,14.0
+2024-03-28,1,0,Ensolarado,0,Quinta,1,0,4,Manhã,FALTA,19.2
+2024-03-28,1,0,Ensolarado,0,Quinta,1,0,5,Tarde,FALTA,23.5
+2024-03-28,1,1,Ensolarado,0,Quinta,1,0,4,Noite,FALTA,27.0
+2024-04-01,1,0,Nublado,0,Segunda,0,1,3,Manhã,FALTA,16.8
+2024-04-01,1,0,Chuvoso,1,Segunda,0,1,4,Tarde,FALTA,19.5
+2024-04-01,1,0,Chuvoso,1,Segunda,0,1,3,Noite,FALTA,21.0

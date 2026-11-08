@@ -204,4 +204,7 @@ def get_open_data():
         return jsonify({"success": False, "error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    port = int(os.environ.get("PORT", 5001))
+    print(f"\n🚀 Servidor EduPredict AI iniciando em: http://localhost:{port}\n")
+    app.run(host="0.0.0.0", port=port, debug=True)
+
